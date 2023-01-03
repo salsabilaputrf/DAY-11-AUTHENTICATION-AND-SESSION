@@ -20,9 +20,11 @@
                       <li class="nav-item">
                         <a class="nav-link fw-normal active" aria-current="page" style="color: black;" href="/">Home</a>
                       </li>
+                      {{if .Data.IsLogin}}
                       <li class="nav-item">
                         <a href="/addProject" class="nav-link fw-normal active" aria-current="page" style="color: black;">Add Project</a>
                       </li>
+                      {{end}}
                     </ul>
                 </div>
 
