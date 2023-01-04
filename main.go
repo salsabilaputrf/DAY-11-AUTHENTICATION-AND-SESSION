@@ -19,9 +19,14 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var Data = map[string]interface{}{
-	"Title":   "Personal Web",
-	"IsLogin": true,
+type MetaData struct{
+	Title string
+	IsLogin bool
+	UserName string
+	FlashData string
+}
+
+var Data = MetaData{
 }
 
 type dataProject struct {
@@ -114,10 +119,10 @@ func home(w http.ResponseWriter, r *http.Request) {
     session, _ := store.Get(r, "SESSION_ID")
 
     if session.Values["IsLogin"] != true {
-        Data["IsLogin"] = false
+        Data.IsLogin = false
     } else {
-        Data["IsLogin"] = session.Values["IsLogin"].(bool)
-        Data["UserName"] = session.Values["Name"].(string)
+        Data.IsLogin = session.Values["IsLogin"].(bool)
+        Data.UserName = session.Values["Name"].(string)
     }
 	
 
@@ -160,13 +165,18 @@ func contactMe(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("message : " + err.Error()))
 		return
 	}
+	var store = sessions.NewCookieStore([]byte("SESSION_ID"))
+    session, _ := store.Get(r, "SESSION_ID")
 
-	respData := map[string]interface{}{
-		"Data":     Data,
-	}
+	if session.Values["IsLogin"] != true {
+        Data.IsLogin = false
+    } else {
+        Data.IsLogin = session.Values["IsLogin"].(bool)
+        Data.UserName = session.Values["Name"].(string)
+    }
 
 	w.WriteHeader(http.StatusOK)
-	tmpl.Execute(w, respData)
+	tmpl.Execute(w, Data)
 }
 
 func addProject(w http.ResponseWriter, r *http.Request) {
@@ -179,12 +189,20 @@ func addProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	respData := map[string]interface{}{
-		"Data":     Data,
-	}
+	var store = sessions.NewCookieStore([]byte("SESSION_ID"))
+    session, _ := store.Get(r, "SESSION_ID")
+
+	if session.Values["IsLogin"] != true {
+        Data.IsLogin = false
+    } else {
+        Data.IsLogin = session.Values["IsLogin"].(bool)
+        Data.UserName = session.Values["Name"].(string)
+    }
+
+	
 
 	w.WriteHeader(http.StatusOK)
-	tmpl.Execute(w, respData)
+	tmpl.Execute(w, Data)
 }
 
 func addProjectInput(w http.ResponseWriter, r *http.Request) {
@@ -410,6 +428,7 @@ func login(w http.ResponseWriter, r *http.Request){
 
 	session.Values["IsLogin"] = true
     session.Values["Name"] = user.Name
+	session.Values["Id"] = user.Id
     session.Options.MaxAge = 10800 
 
     session.AddFlash("Login success", "message")
