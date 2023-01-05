@@ -73,7 +73,7 @@ func main() {
 	route.HandleFunc("/logout", logout).Methods("GET")
 
 	// port := 5000
-	fmt.Println("Server is running on port 5050")
+	fmt.Println("Server is running on port 8080")
 	http.ListenAndServe("localhost:8080", route)
 }
 
@@ -165,15 +165,15 @@ func contactMe(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("message : " + err.Error()))
 		return
 	}
-	var store = sessions.NewCookieStore([]byte("SESSION_ID"))
-    session, _ := store.Get(r, "SESSION_ID")
+	// var store = sessions.NewCookieStore([]byte("SESSION_ID"))
+    // session, _ := store.Get(r, "SESSION_ID")
 
-	if session.Values["IsLogin"] != true {
-        Data.IsLogin = false
-    } else {
-        Data.IsLogin = session.Values["IsLogin"].(bool)
-        Data.UserName = session.Values["Name"].(string)
-    }
+	// if session.Values["IsLogin"] != true {
+    //     Data.IsLogin = false
+    // } else {
+    //     Data.IsLogin = session.Values["IsLogin"].(bool)
+    //     Data.UserName = session.Values["Name"].(string)
+    // }
 
 	w.WriteHeader(http.StatusOK)
 	tmpl.Execute(w, Data)
